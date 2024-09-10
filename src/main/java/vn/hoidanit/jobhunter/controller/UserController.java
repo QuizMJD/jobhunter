@@ -37,5 +37,23 @@ public class UserController {
         List<User> users= this.userService.getAllUsers();
         return users;
     }
+//    @PutMapping("/user/{id}")
+//    public User updateUser(@RequestBody User postManUser,@PathVariable("id") long id) {
+//        User currentUser = this.userService.handleGetUserByID(postManUser.getId());
+//        if (currentUser != null) {
+//            currentUser.setName(postManUser.getName());
+//            currentUser.setEmail(postManUser.getEmail());
+//            currentUser.setPassword(postManUser.getPassword());
+//
+//        }
+//
+//        User ListUserCurrent= this.userService.handleSaveUser(currentUser);
+//        return ListUserCurrent;
+//    }
+@PutMapping("/user/{id}")
+public User updateUser(@RequestBody User postManUser) {
+        User ListUserCurrent= this.userService.handleUpdate(postManUser);
+        return ListUserCurrent;
+}
 
 }
