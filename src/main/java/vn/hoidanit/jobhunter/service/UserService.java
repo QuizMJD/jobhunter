@@ -31,8 +31,8 @@ public class UserService {
 //        return this.userRepository.save(user);
 //
 //    }
-    public User handleUpdate(User ReqUser) {
-        User currentUser = this.handleGetUserByID(ReqUser.getId());
+    public User handleUpdate(User ReqUser,long id) {
+        User currentUser = this.handleGetUserByID(id);
         if (currentUser != null) {
             currentUser.setName(ReqUser.getName());
             currentUser.setEmail(ReqUser.getEmail());

@@ -51,9 +51,10 @@ public class UserController {
 //        return ListUserCurrent;
 //    }
 @PutMapping("/user/{id}")
-public User updateUser(@RequestBody User postManUser) {
-        User ListUserCurrent= this.userService.handleUpdate(postManUser);
-        return ListUserCurrent;
+public User updateUser(@RequestBody User postManUser,@PathVariable("id") long id) {
+    postManUser.setId(id);
+//        User ListUserCurrent= this.userService.handleUpdate(postManUser);
+        return this.userService.handleUpdate(postManUser,id);
 }
 
 }
