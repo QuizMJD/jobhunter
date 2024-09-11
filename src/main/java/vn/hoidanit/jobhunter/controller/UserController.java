@@ -1,5 +1,7 @@
 package vn.hoidanit.jobhunter.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.service.UserService;
@@ -13,48 +15,31 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-
-//    @GetMapping("/user/create")
-    @PostMapping("/user")
-    public User createNewUser(@RequestBody User postManUser) {
+    @PostMapping("/users")
+    public ResponseEntity<User> createNewUser(@RequestBody User postManUser) {
        User ericUser= this.userService.handleCreateUser(postManUser);
-
-       return ericUser;
+       return ResponseEntity.status(HttpStatus.CREATED).body(ericUser);
     }
-    @DeleteMapping("/user/{id}")
-    public String deleteUser(@PathVariable("id") long id) {
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable("id") long id) {
     this.userService.handledeleteUser(id);
-        return "ericUser";
+//        return ResponseEntity.status(HttpStatus.CREATED).body("ericUser");
+        return ResponseEntity.ok("ericUser");
     }
-    @GetMapping("/user/{id}")
-    public User getUserByID(@PathVariable("id") long id) {
+    @GetMapping("/users/{id}")
+    public ResponseEntity<User> getUserByID(@PathVariable("id") long id) {
        User userID= this.userService.handleGetUserByID(id);
+        return ResponseEntity.ok(userID);
+    }
+    @GetMapping("/users")
+    public ResponseEntity<List<User> >getUserAll() {
+         return ResponseEntity.ok(this.userService.getAllUsers());
+    }
 
-        return userID;
-    }
-    @GetMapping("/user")
-    public List<User> getUserAll() {
-        List<User> users= this.userService.getAllUsers();
-        return users;
-    }
-//    @PutMapping("/user/{id}")
-//    public User updateUser(@RequestBody User postManUser,@PathVariable("id") long id) {
-//        User currentUser = this.userService.handleGetUserByID(postManUser.getId());
-//        if (currentUser != null) {
-//            currentUser.setName(postManUser.getName());
-//            currentUser.setEmail(postManUser.getEmail());
-//            currentUser.setPassword(postManUser.getPassword());
-//
-//        }
-//
-//        User ListUserCurrent= this.userService.handleSaveUser(currentUser);
-//        return ListUserCurrent;
-//    }
-@PutMapping("/user/{id}")
-public User updateUser(@RequestBody User postManUser,@PathVariable("id") long id) {
+@PutMapping("/users/{id}")
+public ResponseEntity<User> updateUser(@RequestBody User postManUser,@PathVariable("id") long id) {
     postManUser.setId(id);
-//        User ListUserCurrent= this.userService.handleUpdate(postManUser);
-        return this.userService.handleUpdate(postManUser,id);
+    return ResponseEntity.ok(this.userService.handleUpdate(postManUser,id));
 }
 
 }
