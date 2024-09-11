@@ -27,19 +27,25 @@ public class UserService {
     public List<User> getAllUsers() {
         return this.userRepository.findAll();
     }
-//    public User handleSaveUser(User user) {
-//        return this.userRepository.save(user);
-//
-//    }
-    public User handleUpdate(User ReqUser,long id) {
-        User currentUser = this.handleGetUserByID(id);
-        if (currentUser != null) {
-            currentUser.setName(ReqUser.getName());
-            currentUser.setEmail(ReqUser.getEmail());
-            currentUser.setPassword(ReqUser.getPassword());
-            currentUser=this.userRepository.save(currentUser);
 
-        }
+//    public User handleUpdate(User ReqUser,long id) {
+//        User currentUser = this.handleGetUserByID(id);
+//        if (currentUser != null) {
+//            currentUser.setName(ReqUser.getName());
+//            currentUser.setEmail(ReqUser.getEmail());
+//            currentUser.setPassword(ReqUser.getPassword());
+//            currentUser=this.userRepository.save(currentUser);
+//
+//        }
+public User handleUpdate(User ReqUser) {
+    User currentUser = this.handleGetUserByID(ReqUser.getId());
+    if (currentUser != null) {
+        currentUser.setName(ReqUser.getName());
+        currentUser.setEmail(ReqUser.getEmail());
+        currentUser.setPassword(ReqUser.getPassword());
+        currentUser=this.userRepository.save(currentUser);
+
+    }
 
 
         return currentUser;
