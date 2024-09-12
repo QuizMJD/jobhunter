@@ -25,7 +25,7 @@ public class UserController {
     @DeleteMapping("/users/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable("id") long id) throws IdInvalidException {
         if(id>=1500){
-            throw new IdInvalidException("id lớn hơn 1500");
+            throw new IdInvalidException("id lớn hơn 1501");
         }
     this.userService.handledeleteUser(id);
 //        return ResponseEntity.status(HttpStatus.CREATED).body("ericUser");
@@ -41,12 +41,7 @@ public class UserController {
          return ResponseEntity.ok(this.userService.getAllUsers());
     }
 
-//    @PutMapping("/users/{id}")
-//    public ResponseEntity<User> updateUser(@RequestBody User postManUser,@PathVariable("id") long id) {
-//        postManUser.setId(id);
-//        return ResponseEntity.ok(this.userService.handleUpdate(postManUser,id));
-//    }
-@PutMapping("/users/{id}")
+@PutMapping("/users")
 public ResponseEntity<User> updateUser(@RequestBody User user) {
 
     return ResponseEntity.ok(this.userService.handleUpdate(user));
