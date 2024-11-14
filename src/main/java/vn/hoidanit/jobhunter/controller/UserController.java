@@ -42,14 +42,15 @@ public class UserController {
        User userID= this.userService.handleGetUserByID(id);
         return ResponseEntity.ok(userID);
     }
+//
     @GetMapping("/users")
     public ResponseEntity<List<User> >getUserAll() {
-         return ResponseEntity.ok(this.userService.getAllUsers());
+        return ResponseEntity.ok(this.userService.getAllUsers());
     }
 
-@PutMapping("/users")
-public ResponseEntity<User> updateUser(@RequestBody User user) {
-        return ResponseEntity.ok(this.userService.handleUpdate(user));
-}
+    @PutMapping("/users")
+    public ResponseEntity<User> updateUser(@RequestBody User user) {
+            return ResponseEntity.ok(this.userService.handleUpdate(user));
+    }
 
-}
+    }
