@@ -1,10 +1,13 @@
 package vn.hoidanit.jobhunter.controller;
 
+import com.turkraft.springfilter.boot.Filter;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 import vn.hoidanit.jobhunter.domain.Company;
+import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.dto.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.service.CompanyService;
 import org.springframework.http.ResponseEntity;
@@ -26,16 +29,10 @@ public class CompanyController {
     }
     @GetMapping("/company")
     public ResponseEntity<ResultPaginationDTO> getAllCompanies(
-            @RequestParam("current") Optional<String> currentOptional,
-            @RequestParam("pageSize") Optional<String> pageSizeOptional
+            @Filter Specification<Company> spec, Pageable pageable
 
     ) {
-        String sCurrent=currentOptional.orElse("");
-        String sPageSize=pageSizeOptional.orElse("");
-        int current=Integer.parseInt(sCurrent);
-        int pageSize=Integer.parseInt(sPageSize);
-        Pageable pageable= PageRequest.of(current-1, pageSize);
-        return ResponseEntity.ok(this.companyService.handleGetAllCompany(pageable));
+        return ResponseEntity.ok(this.companyService.handleGetAllCompany(spec,pageable));
     }
     @PutMapping("/company")
     public ResponseEntity<Company>updateCompany (@Valid @RequestBody Company reqCompany) {
