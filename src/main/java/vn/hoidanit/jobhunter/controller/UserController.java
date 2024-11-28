@@ -12,6 +12,7 @@ import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.dto.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.service.UserService;
 import vn.hoidanit.jobhunter.service.error.IdInvalidException;
+import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
 
 import java.util.List;
 import java.util.Optional;
@@ -49,12 +50,12 @@ public class UserController {
         return ResponseEntity.ok(userID);
     }
 //
+
     @GetMapping("/users")
+    @ApiMessage("fetch all user")
     public ResponseEntity<ResultPaginationDTO>getUserAll(
             @Filter Specification<User> spec,Pageable pageable
-
     ) {
-
         return ResponseEntity.ok(this.userService.getAllUsers(spec,pageable));
     }
 

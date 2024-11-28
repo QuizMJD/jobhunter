@@ -11,6 +11,7 @@ import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.dto.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.service.CompanyService;
 import org.springframework.http.ResponseEntity;
+import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,7 @@ public class CompanyController {
         return ResponseEntity.ok(this.companyService.handleSaveCompany(company));
 //        return ResponseEntity.status(HttpStatus.CREATED).body(this.companyService.handleCreateCompany(company));
     }
+    @ApiMessage("fetch al company")
     @GetMapping("/company")
     public ResponseEntity<ResultPaginationDTO> getAllCompanies(
             @Filter Specification<Company> spec, Pageable pageable
