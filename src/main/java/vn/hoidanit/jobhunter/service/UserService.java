@@ -28,7 +28,7 @@ public class UserService {
         return this.userRepository.save(user);
     }
 
-    public void handledeleteUser(long id) {
+    public void handleDeleteUser(long id) {
         this.userRepository.deleteById(id);
     }
 
@@ -58,6 +58,9 @@ public class UserService {
             currentUser.setName(ReqUser.getName());
             currentUser.setEmail(ReqUser.getEmail());
             currentUser.setPassword(ReqUser.getPassword());
+            currentUser.setGender(ReqUser.getGender());
+            currentUser.setAddress(ReqUser.getAddress());
+            currentUser.setAge(ReqUser.getAge());
             currentUser = this.userRepository.save(currentUser);
 
         }

@@ -41,7 +41,7 @@ public class UserController {
         if(id>=1500){
             throw new IdInvalidException("id lớn hơn 1501");
         }
-    this.userService.handledeleteUser(id);
+    this.userService.handleDeleteUser(id);
 //        return ResponseEntity.status(HttpStatus.CREATED).body("ericUser");
         return ResponseEntity.ok("ericUser");
     }

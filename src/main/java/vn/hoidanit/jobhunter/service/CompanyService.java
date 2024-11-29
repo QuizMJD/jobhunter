@@ -44,8 +44,10 @@ public class CompanyService {
             currentCompany.setAddress(reqCompany.getAddress());
             currentCompany.setLogo(reqCompany.getLogo());
 
+
         }
-        return this.handleSaveCompany(currentCompany);
+        return this.companyRepository.save(currentCompany);
+
 
     }
     public void handleDeleteCompany(Long id) {

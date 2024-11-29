@@ -1,11 +1,16 @@
 package vn.hoidanit.jobhunter.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import vn.hoidanit.jobhunter.util.SecurityUtil;
+import vn.hoidanit.jobhunter.util.constant.GenderEnum;
 
+import java.time.Instant;
+
+@Getter
+@Setter
 @Entity
 @Table(name = "users")
 public class User {
@@ -16,36 +21,29 @@ public class User {
     private String email;
     private String password;
 
-    public String getName() {
-        return name;
-    }
+    private int age;
+    @Enumerated(EnumType.STRING)
+    private GenderEnum gender;
+    private String address;
+    private String refreshToken;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss a",timezone = "GMT+7")
+    private Instant createdAt;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss a",timezone = "GMT+7")
+    private Instant updatedAt;
+    private String createdBy;
+    private String updatedBy;
 
-    public void setName(String name) {
-        this.name = name;
+    @PrePersist
+    public void handleCreateAt() {
+        this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent()
+                ? SecurityUtil.getCurrentUserLogin().get() : "";
+        this.createdAt = Instant.now();
     }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
+    @PreUpdate
+    public void handleUpdateAt() {
+        this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent()
+                ? SecurityUtil.getCurrentUserLogin().get() : "";
+        this.updatedAt = Instant.now();
     }
 
 }
