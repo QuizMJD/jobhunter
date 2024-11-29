@@ -1,7 +1,6 @@
 package vn.hoidanit.jobhunter.controller;
 
 import com.turkraft.springfilter.boot.Filter;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -9,13 +8,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import vn.hoidanit.jobhunter.domain.User;
+import vn.hoidanit.jobhunter.dto.ResponseCreateDTO;
+import vn.hoidanit.jobhunter.dto.ResponseUpdateDTO;
 import vn.hoidanit.jobhunter.dto.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.service.UserService;
 import vn.hoidanit.jobhunter.service.error.IdInvalidException;
 import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
-
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -29,10 +27,10 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<User> createNewUser(@RequestBody User postManUser) {
+    public ResponseEntity<ResponseCreateDTO> createNewUser(@RequestBody User postManUser) {
         String hashPassword=passwordEncoder.encode(postManUser.getPassword());
         postManUser.setPassword(hashPassword);
-       User ericUser= this.userService.handleCreateUser(postManUser);
+        ResponseCreateDTO ericUser= this.userService.handleCreateUser(postManUser);
        return ResponseEntity.status(HttpStatus.CREATED).body(ericUser);
     }
 
@@ -61,8 +59,10 @@ public class UserController {
     }
 
     @PutMapping("/users")
-    public ResponseEntity<User> updateUser(@RequestBody User user) {
-            return ResponseEntity.ok(this.userService.handleUpdate(user));
+    public ResponseEntity<ResponseUpdateDTO> updateUser(@RequestBody User user) {
+        ResponseUpdateDTO handleUpdate=this.userService.handleUpdate(user);
+
+            return ResponseEntity.ok(handleUpdate);
     }
 
 

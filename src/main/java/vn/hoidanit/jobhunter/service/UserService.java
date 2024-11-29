@@ -3,15 +3,14 @@ package vn.hoidanit.jobhunter.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.dto.Meta;
+import vn.hoidanit.jobhunter.dto.ResponseCreateDTO;
+import vn.hoidanit.jobhunter.dto.ResponseUpdateDTO;
 import vn.hoidanit.jobhunter.dto.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.repository.UserRepository;
-
-import java.util.List;
 
 @Service
 public class UserService {
@@ -23,9 +22,18 @@ public class UserService {
 
     }
 
-    public User handleCreateUser(User user) {
-//        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return this.userRepository.save(user);
+    public ResponseCreateDTO handleCreateUser(User user) {
+    User handleUser = userRepository.save(user);
+        ResponseCreateDTO rDTO = new ResponseCreateDTO();
+        rDTO.setId(handleUser.getId());
+        rDTO.setName(handleUser.getName());
+        rDTO.setEmail(handleUser.getEmail());
+        rDTO.setGender(handleUser.getGender());
+        rDTO.setAddress(handleUser.getAddress());
+        rDTO.setAge(handleUser.getAge());
+        rDTO.setCreatedAt(handleUser.getCreatedAt());
+        return rDTO;
+
     }
 
     public void handleDeleteUser(long id) {
@@ -52,7 +60,7 @@ public class UserService {
         return rs;
     }
 
-    public User handleUpdate(User ReqUser) {
+    public ResponseUpdateDTO handleUpdate(User ReqUser) {
         User currentUser = this.handleGetUserByID(ReqUser.getId());
         if (currentUser != null) {
             currentUser.setName(ReqUser.getName());
@@ -64,7 +72,15 @@ public class UserService {
             currentUser = this.userRepository.save(currentUser);
 
         }
-        return currentUser;
+        ResponseUpdateDTO rDTO = new ResponseUpdateDTO();
+        rDTO.setId(currentUser.getId());
+        rDTO.setName(currentUser.getName());
+        rDTO.setEmail(currentUser.getEmail());
+        rDTO.setGender(currentUser.getGender());
+        rDTO.setAddress(currentUser.getAddress());
+        rDTO.setAge(currentUser.getAge());
+        rDTO.setUpdatedAt(currentUser.getUpdatedAt());
+        return rDTO;
     }
 
     public User handleGetUserByUsername(String username) {
