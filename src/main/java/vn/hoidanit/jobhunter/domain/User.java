@@ -2,8 +2,10 @@ package vn.hoidanit.jobhunter.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.logging.log4j.message.Message;
 import vn.hoidanit.jobhunter.util.SecurityUtil;
 import vn.hoidanit.jobhunter.util.constant.GenderEnum;
 
@@ -18,7 +20,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
+    @NotBlank(message = "Mail không được để trống")
     private String email;
+    @NotBlank(message = "Password không được để trống")
     private String password;
 
     private int age;

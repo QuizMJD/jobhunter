@@ -1,15 +1,18 @@
 package vn.hoidanit.jobhunter.controller;
 
 import com.turkraft.springfilter.boot.Filter;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import vn.hoidanit.jobhunter.domain.RestResponse;
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.dto.ResponseCreateDTO;
 import vn.hoidanit.jobhunter.dto.ResponseUpdateDTO;
+import vn.hoidanit.jobhunter.dto.ResponseUserDTO;
 import vn.hoidanit.jobhunter.dto.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.service.UserService;
 import vn.hoidanit.jobhunter.service.error.IdInvalidException;
@@ -27,28 +30,30 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<ResponseCreateDTO> createNewUser(@RequestBody User postManUser) {
+    @ApiMessage("tao thanh cong")
+    public ResponseEntity<ResponseCreateDTO> createNewUser(@Valid @RequestBody User postManUser) throws IdInvalidException {
         String hashPassword=passwordEncoder.encode(postManUser.getPassword());
         postManUser.setPassword(hashPassword);
-        ResponseCreateDTO ericUser= this.userService.handleCreateUser(postManUser);
-       return ResponseEntity.status(HttpStatus.CREATED).body(ericUser);
+        User User= this.userService.handleCreateUser(postManUser);
+       return ResponseEntity.status(HttpStatus.CREATED).body(userService.ConvertUserCreateToDTO(User));
     }
 
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable("id") long id) throws IdInvalidException {
+    @ApiMessage("Xoa thanh cong")
+    public ResponseEntity<User> deleteUser(@PathVariable("id") long id) throws IdInvalidException {
         if(id>=1500){
             throw new IdInvalidException("id lớn hơn 1501");
         }
-    this.userService.handleDeleteUser(id);
-//        return ResponseEntity.status(HttpStatus.CREATED).body("ericUser");
-        return ResponseEntity.ok("ericUser");
+
+        this.userService.handleDeleteUser(id);
+        return ResponseEntity.ok(null);
     }
+    ////
     @GetMapping("/users/{id}")
-    public ResponseEntity<User> getUserByID(@PathVariable("id") long id) {
+    public ResponseEntity<ResponseUserDTO> getUserByID(@PathVariable("id") long id) throws IdInvalidException {
        User userID= this.userService.handleGetUserByID(id);
-        return ResponseEntity.ok(userID);
+        return ResponseEntity.ok(this.userService.ConvertDetailUserDTO(userID));
     }
-//
 
     @GetMapping("/users")
     @ApiMessage("fetch all user")
@@ -59,11 +64,12 @@ public class UserController {
     }
 
     @PutMapping("/users")
-    public ResponseEntity<ResponseUpdateDTO> updateUser(@RequestBody User user) {
-        ResponseUpdateDTO handleUpdate=this.userService.handleUpdate(user);
+    public ResponseEntity<ResponseUpdateDTO> updateUser(@Valid @RequestBody User userClient) throws IdInvalidException{
+        User user=this.userService.handleUpdate(userClient);
 
-            return ResponseEntity.ok(handleUpdate);
+        return ResponseEntity.ok(this.userService.ConvertUserUpdateToDTO(user));
     }
+
 
 
     }

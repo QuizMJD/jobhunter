@@ -3,14 +3,19 @@ package vn.hoidanit.jobhunter.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import vn.hoidanit.jobhunter.domain.RestResponse;
 import vn.hoidanit.jobhunter.domain.User;
-import vn.hoidanit.jobhunter.dto.Meta;
-import vn.hoidanit.jobhunter.dto.ResponseCreateDTO;
-import vn.hoidanit.jobhunter.dto.ResponseUpdateDTO;
-import vn.hoidanit.jobhunter.dto.ResultPaginationDTO;
+import vn.hoidanit.jobhunter.dto.*;
 import vn.hoidanit.jobhunter.repository.UserRepository;
+import vn.hoidanit.jobhunter.service.error.IdInvalidException;
+import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -22,26 +27,41 @@ public class UserService {
 
     }
 
-    public ResponseCreateDTO handleCreateUser(User user) {
-    User handleUser = userRepository.save(user);
+    public User handleCreateUser(User user) throws IdInvalidException {
+        User getEmail=handleGetUserByUsername(user.getEmail());
+        if(getEmail==null) {
+            throw new IdInvalidException("email: " +user.getEmail()+"da ton tai vui long nhap mail khac");
+        }
+        return this.userRepository.save(user);
+    }
+    public ResponseCreateDTO ConvertUserCreateToDTO(User user) {
         ResponseCreateDTO rDTO = new ResponseCreateDTO();
-        rDTO.setId(handleUser.getId());
-        rDTO.setName(handleUser.getName());
-        rDTO.setEmail(handleUser.getEmail());
-        rDTO.setGender(handleUser.getGender());
-        rDTO.setAddress(handleUser.getAddress());
-        rDTO.setAge(handleUser.getAge());
-        rDTO.setCreatedAt(handleUser.getCreatedAt());
-        return rDTO;
+           rDTO.setId(user.getId());
+           rDTO.setName(user.getName());
+           rDTO.setEmail(user.getEmail());
+           rDTO.setGender(user.getGender());
+           rDTO.setAddress(user.getAddress());
+           rDTO.setAge(user.getAge());
+           rDTO.setCreatedAt(user.getCreatedAt());
+           return rDTO;
+       }
 
-    }
 
-    public void handleDeleteUser(long id) {
+    public User handleDeleteUser(long id) throws IdInvalidException {
+        User userToDelete = this.handleGetUserByID(id);
+        if (userToDelete == null) {
+            throw new IdInvalidException("Id: " + id + " Không tồn tại vui lòng nhập id khác");
+        }
         this.userRepository.deleteById(id);
+        return userToDelete; // Trả về User đã xóa
     }
 
-    public User handleGetUserByID(long id) {
-        return this.userRepository.findById(id).orElse(null);
+    public User handleGetUserByID(long id) throws IdInvalidException {
+        User findID = this.userRepository.findById(id).orElse(null);
+        if (findID == null) {
+            throw new IdInvalidException("Id: " + id + " Không tồn tại vui lòng nhập id khác");
+        }
+        return findID ;
     }
 
     public ResultPaginationDTO getAllUsers(Specification<User> spec,Pageable pageableRequest) {
@@ -53,14 +73,30 @@ public class UserService {
         mt.setPages(pageUser.getTotalPages());
         mt.setTotal(pageUser.getTotalElements());
         rs.setMeta(mt);
-        rs.setResult(pageUser.getContent());
+//        rs.setResult(pageUser.getContent());
+
+        // remove sensitive data
+        List<ResponseUserDTO> listUser = pageUser.getContent()
+                .stream().map(item -> new ResponseUserDTO(
+                        item.getId(),
+                        item.getName(),
+                        item.getEmail(),
+                        item.getAge(),
+                        item.getGender(),
+                        item.getAddress(),
+                        item.getUpdatedAt(),
+                        item.getCreatedAt()))
+                .collect(Collectors.toList());
+        rs.setResult(listUser);
+
+
 
 
 
         return rs;
     }
 
-    public ResponseUpdateDTO handleUpdate(User ReqUser) {
+    public User handleUpdate(User ReqUser) throws IdInvalidException {
         User currentUser = this.handleGetUserByID(ReqUser.getId());
         if (currentUser != null) {
             currentUser.setName(ReqUser.getName());
@@ -69,23 +105,45 @@ public class UserService {
             currentUser.setGender(ReqUser.getGender());
             currentUser.setAddress(ReqUser.getAddress());
             currentUser.setAge(ReqUser.getAge());
-            currentUser = this.userRepository.save(currentUser);
-
         }
+        else {
+            throw new IdInvalidException("Id: "+ReqUser.getId()+" Khong ton tai vui long nhap id khac");
+        }
+        return userRepository.save(currentUser);
+
+    }
+    public ResponseUpdateDTO ConvertUserUpdateToDTO (User user){
         ResponseUpdateDTO rDTO = new ResponseUpdateDTO();
-        rDTO.setId(currentUser.getId());
-        rDTO.setName(currentUser.getName());
-        rDTO.setEmail(currentUser.getEmail());
-        rDTO.setGender(currentUser.getGender());
-        rDTO.setAddress(currentUser.getAddress());
-        rDTO.setAge(currentUser.getAge());
-        rDTO.setUpdatedAt(currentUser.getUpdatedAt());
+        rDTO.setId(user.getId());
+        rDTO.setName(user.getName());
+        rDTO.setEmail(user.getEmail());
+        rDTO.setGender(user.getGender());
+        rDTO.setAddress(user.getAddress());
+        rDTO.setAge(user.getAge());
+        rDTO.setUpdatedAt(user.getUpdatedAt());
         return rDTO;
     }
 
     public User handleGetUserByUsername(String username) {
+
         return this.userRepository.findByEmail(username);
 
-
     }
+    public ResponseUserDTO ConvertDetailUserDTO(User user){
+        ResponseUserDTO rDTO = new ResponseUserDTO();
+        rDTO.setId(user.getId());
+        rDTO.setName(user.getName());
+        rDTO.setEmail(user.getEmail());
+        rDTO.setGender(user.getGender());
+        rDTO.setAddress(user.getAddress());
+        rDTO.setAge(user.getAge());
+        rDTO.setCreatedAt(user.getCreatedAt());
+        rDTO.setUpdatedAt(user.getUpdatedAt());
+        return rDTO;
+    }
+
+
+
+
 }
+
