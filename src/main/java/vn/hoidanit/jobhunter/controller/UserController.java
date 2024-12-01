@@ -22,18 +22,13 @@ import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
 @RequestMapping("/api/v1")
 public class UserController {
     private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
-
-    public UserController(UserService userService ,PasswordEncoder passwordEncoder) {
+    public UserController(UserService userService ) {
         this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/users")
     @ApiMessage("tao thanh cong")
     public ResponseEntity<ResponseCreateDTO> createNewUser(@Valid @RequestBody User postManUser) throws IdInvalidException {
-        String hashPassword=passwordEncoder.encode(postManUser.getPassword());
-        postManUser.setPassword(hashPassword);
         User User= this.userService.handleCreateUser(postManUser);
        return ResponseEntity.status(HttpStatus.CREATED).body(userService.ConvertUserCreateToDTO(User));
     }
@@ -41,10 +36,6 @@ public class UserController {
     @DeleteMapping("/users/{id}")
     @ApiMessage("Xoa thanh cong")
     public ResponseEntity<User> deleteUser(@PathVariable("id") long id) throws IdInvalidException {
-        if(id>=1500){
-            throw new IdInvalidException("id lớn hơn 1501");
-        }
-
         this.userService.handleDeleteUser(id);
         return ResponseEntity.ok(null);
     }

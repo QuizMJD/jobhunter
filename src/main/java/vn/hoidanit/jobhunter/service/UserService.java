@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import vn.hoidanit.jobhunter.domain.RestResponse;
@@ -20,20 +21,26 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
 
     }
 
     public User handleCreateUser(User user) throws IdInvalidException {
-        User getEmail=handleGetUserByUsername(user.getEmail());
-        if(getEmail==null) {
+        User getCurrentEmail=handleGetUserByUsername(user.getEmail());
+        if(getCurrentEmail !=null) {
             throw new IdInvalidException("email: " +user.getEmail()+"da ton tai vui long nhap mail khac");
         }
+        String hashPassword=passwordEncoder.encode(user.getPassword());
+        user.setPassword(hashPassword);
         return this.userRepository.save(user);
     }
+
+
     public ResponseCreateDTO ConvertUserCreateToDTO(User user) {
         ResponseCreateDTO rDTO = new ResponseCreateDTO();
            rDTO.setId(user.getId());
@@ -48,10 +55,14 @@ public class UserService {
 
 
     public User handleDeleteUser(long id) throws IdInvalidException {
+         if(id>=1500){
+            throw new IdInvalidException("id lớn hơn 1501");
+        }
         User userToDelete = this.handleGetUserByID(id);
         if (userToDelete == null) {
             throw new IdInvalidException("Id: " + id + " Không tồn tại vui lòng nhập id khác");
         }
+
         this.userRepository.deleteById(id);
         return userToDelete; // Trả về User đã xóa
     }
