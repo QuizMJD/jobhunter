@@ -41,7 +41,7 @@ public class UserController {
     @GetMapping("/users/{id}")
     public ResponseEntity<ResponseUserDTO> getUserByID(@PathVariable("id") long id) throws IdInvalidException {
 //       User userID= this.userService.handleGetUserByID(id);
-        return ResponseEntity.ok(this.userService.ConvertDetailUserDTO(this.userService.handleGetUserByID(id)));
+        return ResponseEntity.ok(this.userService.convertDetailUserDTO(this.userService.handleGetUserByID(id)));
     }
 
     @GetMapping("/users")
@@ -55,7 +55,7 @@ public class UserController {
     @PutMapping("/users")
     public ResponseEntity<ResponseUpdateDTO> updateUser(@Valid @RequestBody User userClient) throws IdInvalidException{
 //        User user=this.userService.handleUpdate(userClient);
-        return ResponseEntity.ok(this.userService.ConvertUserUpdateToDTO(this.userService.handleUpdate(userClient)));
+        return ResponseEntity.ok(this.userService.convertUserUpdateToDTO(this.userService.handleUpdate(userClient)));
     }
 
 

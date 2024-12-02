@@ -123,7 +123,7 @@ public class UserService {
         return userRepository.save(currentUser);
 
     }
-    public ResponseUpdateDTO ConvertUserUpdateToDTO (User user){
+    public ResponseUpdateDTO convertUserUpdateToDTO (User user){
         ResponseUpdateDTO rDTO = new ResponseUpdateDTO();
         rDTO.setId(user.getId());
         rDTO.setName(user.getName());
@@ -140,7 +140,7 @@ public class UserService {
         return this.userRepository.findByEmail(username);
 
     }
-    public ResponseUserDTO ConvertDetailUserDTO(User user){
+    public ResponseUserDTO convertDetailUserDTO(User user){
         ResponseUserDTO rDTO = new ResponseUserDTO();
         rDTO.setId(user.getId());
         rDTO.setName(user.getName());
@@ -151,6 +151,13 @@ public class UserService {
         rDTO.setCreatedAt(user.getCreatedAt());
         rDTO.setUpdatedAt(user.getUpdatedAt());
         return rDTO;
+    }
+    public void updateUserToken(String token,String email) {
+        User currentUser = this.userRepository.findByEmail(email);
+        if (currentUser != null) {
+            currentUser.setRefreshToken(token);
+            this.userRepository.save(currentUser);
+        }
     }
 
 
