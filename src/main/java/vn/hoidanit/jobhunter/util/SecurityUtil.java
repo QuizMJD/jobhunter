@@ -11,6 +11,8 @@ import vn.hoidanit.jobhunter.dto.ResLoginDTO;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,16 +28,21 @@ public class SecurityUtil {
     private long accessTokenExpiration;
     @Value("${hoidanit.jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenExpiration;
-    public String createAccessToken(Authentication authentication) {
+    public String createAccessToken(Authentication authentication,ResLoginDTO.UserLogin resLoginDTO) {
         Instant now = Instant.now();
         Instant validity = now.plus(this.refreshTokenExpiration, ChronoUnit.SECONDS);
+       // hardcode permission
+        List<String>listAuthority = new ArrayList<String>();
+        listAuthority.add("ROLE_USER_CREATE");
+        listAuthority.add("ROLE_USER_UPDATE");
 
         // @formatter:off
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuedAt(now)
                 .expiresAt(validity)
                 .subject(authentication.getName())
-                .claim("hoidanit",authentication)
+                .claim("user",resLoginDTO)
+                .claim("permissions",listAuthority)
                 .build();
 
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
